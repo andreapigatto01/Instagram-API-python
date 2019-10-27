@@ -1073,5 +1073,5 @@ class InstagramAPI:
         ## Get Id from username info
         self.getInfoByName(username)
         info = self.LastJson
-        return info['user']['id']
+        return info['user']['pk']
 
