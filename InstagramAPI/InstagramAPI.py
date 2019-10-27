@@ -1064,3 +1064,14 @@ class InstagramAPI:
         sleep_time = random.randrange(self.TIME_SLEEP_MIN, self.TIME_SLEEP_MAX)
         print("Sleeping time: ", sleep_time)
         time.sleep(sleep_time)
+
+    def getInfoByName(self, username):
+        ## Extract full info from particular username
+        return self.SendRequest('users/' + username + '/usernameinfo/')
+
+    def getUserIdForName(self, username):
+        ## Get Id from username info
+        self.getInfoByName(username)
+        info = self.LastJson
+        return info['user']['id']
+
