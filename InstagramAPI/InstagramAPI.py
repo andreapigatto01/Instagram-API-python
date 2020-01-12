@@ -51,7 +51,7 @@ class InstagramAPI:
     SIG_KEY_VERSION = '4'
 
     # Time Sleep constants
-    TIME_SLEEP_MIN = 5
+    TIME_SLEEP_MIN = 10
     TIME_SLEEP_MAX = 30
 
     # username            # Instagram username
@@ -102,7 +102,7 @@ class InstagramAPI:
                         'device_id': self.device_id,
                         'password': self.password,
                         'login_attempt_count': '0'}
-
+                
                 if (self.SendRequest('accounts/login/', self.generateSignature(json.dumps(data)), True)):
                     self.isLoggedIn = True
                     self.username_id = self.LastJson["logged_in_user"]["pk"]
@@ -872,6 +872,10 @@ class InstagramAPI:
                            '_csrftoken': self.token})
         return self.SendRequest('friendships/show/' + str(userId) + '/', self.generateSignature(data))
 
+    ## Previous method was not working with data
+    def getUserFriendship(self, userId):
+        return self.SendRequest('friendships/show/' + str(userId) + '/')
+
     def getLikedMedia(self, maxid=''):
         return self.SendRequest('feed/liked/?max_id=' + str(maxid))
 
@@ -1059,10 +1063,10 @@ class InstagramAPI:
                 break
         return liked_items
 
-    def setSleep(self):
+    def setSleep(self, time_sleep_min=TIME_SLEEP_MIN, time_sleep_max=TIME_SLEEP_MAX):
         ## Random sleeping time between ranges values
-        sleep_time = random.randrange(self.TIME_SLEEP_MIN, self.TIME_SLEEP_MAX)
-        print("Sleeping time: ", sleep_time)
+        sleep_time = random.randrange(time_sleep_min, time_sleep_max)
+        print("Sleep: ", sleep_time)
         time.sleep(sleep_time)
 
     def getInfoByName(self, username):
@@ -1075,3 +1079,26 @@ class InstagramAPI:
         info = self.LastJson
         return info['user']['pk']
 
+    def getLastUserFeed(self, usernameId):
+        ## Get only first extract of user feed
+        user_feed = []
+        self.getUserFeed(usernameId)
+        temp = self.LastJson
+        for item in temp['items']:
+            user_feed.append(item)
+        return user_feed
+
+    def getUsersMediaLikers(self, mediaId):
+        ## Getting Likers of a Media. Showing ONLY users NOT followed! Great!
+        users = []
+        self.getMediaLikers(mediaId)
+        temp = self.LastJson
+        for item in temp["users"]:
+            users.append(item)
+        return users
+
+    def getUserFriendshipInfo(self, usernameId):
+        ## Getting Friendship info
+        self.getUserFriendship(usernameId)
+        temp = self.LastJson
+        return temp
